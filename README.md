@@ -30,12 +30,18 @@ schnellste Art herauszufinden, warum irgendwo nichts läuft.
 ## Bauen
 
 ```bash
-./gradlew build          # baut und testet
+./gradlew build          # baut, testet und legt die Jar in out/ ab
 ./gradlew test           # nur Tests
 ```
 
-Gebraucht wird ein JDK 25 (Hytale-Plugins laufen darauf). Die Jar landet unter
-`build/libs/`.
+Gebraucht wird ein JDK 25 (Hytale-Plugins laufen darauf). Ist keins
+installiert, laedt Gradle sich selbst eins herunter.
+
+Die Jar landet unter `build/libs/` und zusaetzlich durchnummeriert unter
+`out/Stroemwerk-<version>-b<nummer>.jar`. Der Zaehler steht in
+`out/build-number.txt`; beides ist nicht eingecheckt, die Nummern gelten also
+nur auf dem eigenen Rechner. Aus einem roten Build entsteht keine Jar in
+`out/`.
 
 Für den vollständigen Build gehört `HytaleServer.jar` nach `libraries/`,
 siehe [libraries/README.md](libraries/README.md). **Ohne** die Jar baut und
@@ -64,9 +70,9 @@ genau der Teil, den man anfassen muss, wenn sich die Server-API ändert.
 
 ## Offene Anbindung
 
-Der Mod ist gegen die öffentlich dokumentierte Server-API geschrieben, aber
-noch nicht gegen eine echte `HytaleServer.jar` kompiliert. Drei Stellen sind
-deshalb noch nicht angeschlossen und im Code mit `ANPASSEN` markiert:
+Der Mod kompiliert gegen eine echte `HytaleServer.jar`, laedt im Spiel und
+meldet sich im Log. Die Mechanik haengt aber an keinem Server-Event — drei
+Stellen sind noch nicht angeschlossen und im Code mit `ANPASSEN` markiert:
 
 1. **Block-IDs auflösen** (`StroemwerkPlugin.setup()`) — die IDs von
    Wasserkanal und Wasserpumpe müssen aus der Item-Registry kommen, aktuell

@@ -1,1 +1,6 @@
+// Laedt bei Bedarf ein JDK 25 herunter, falls keins installiert ist.
+plugins {
+    id 'org.gradle.toolchains.foojay-resolver-convention' version '1.0.0'
+}
+
 rootProject.name = 'Stroemwerk'

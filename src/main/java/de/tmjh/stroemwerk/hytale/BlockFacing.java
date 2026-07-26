@@ -3,6 +3,7 @@ package de.tmjh.stroemwerk.hytale;
 import com.hypixel.hytale.server.core.universe.world.World;
 import de.tmjh.stroemwerk.flow.BlockPos;
 import de.tmjh.stroemwerk.flow.Direction;
+import de.tmjh.stroemwerk.platform.PlacedFacingStore;
 
 /**
  * Liest die Ausrichtung eines platzierten Blocks aus.

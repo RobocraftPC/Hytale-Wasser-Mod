@@ -4,6 +4,7 @@ import com.hypixel.hytale.server.core.plugin.JavaPlugin;
 import com.hypixel.hytale.server.core.plugin.JavaPluginInit;
 import de.tmjh.stroemwerk.flow.FlowSettings;
 import de.tmjh.stroemwerk.hytale.commands.WasserbahnCommand;
+import java.util.logging.Level;
 import javax.annotation.Nonnull;
 
 /**
@@ -32,7 +33,7 @@ public class StroemwerkPlugin extends JavaPlugin {
 
         getCommandRegistry().registerCommand(new WasserbahnCommand(runtime));
 
-        getLogger().info("Stroemwerk geladen - Wasserbahn bereit");
+        getLogger().at(Level.INFO).log("Stroemwerk geladen - Wasserbahn bereit");
     }
 
     public StroemwerkRuntime runtime() {
