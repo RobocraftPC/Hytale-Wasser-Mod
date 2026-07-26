@@ -1,0 +1,10 @@
+build/
+.gradle/
+tools/junit-console.jar
+
+# Kommt aus der eigenen Hytale-Installation, siehe libraries/README.md
+libraries/*.jar
+
+.idea/
+*.iml
+out/

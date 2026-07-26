@@ -1,0 +1,76 @@
+plugins {
+    id 'java'
+}
+
+group = 'de.tmjh'
+version = '0.1.0'
+
+repositories {
+    mavenCentral()
+    // HytaleServer.jar liegt hier, siehe libraries/README.md
+    flatDir {
+        dirs 'libraries'
+    }
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
+
+// Die Stroemungslogik unter de.tmjh.stroemwerk.flow und .platform kommt ohne
+// Server aus. Nur das Paket .hytale braucht die Server-Jar, damit die Tests
+// auch ohne installiertes Hytale laufen.
+def hytaleSources = 'de/tmjh/stroemwerk/hytale/**'
+def serverJar = file('libraries/HytaleServer.jar')
+
+sourceSets {
+    main {
+        java {
+            if (!serverJar.exists()) {
+                exclude hytaleSources
+            }
+        }
+    }
+}
+
+dependencies {
+    if (serverJar.exists()) {
+        compileOnly name: 'HytaleServer'
+    }
+    compileOnly 'com.google.code.findbugs:jsr305:3.0.2'
+
+    testImplementation platform('org.junit:junit-bom:5.11.3')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+tasks.named('compileJava') {
+    doFirst {
+        if (!serverJar.exists()) {
+            logger.warn('libraries/HytaleServer.jar fehlt - das Paket .hytale wird uebersprungen. ' +
+                    'Siehe libraries/README.md.')
+        }
+    }
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+    testLogging {
+        events 'passed', 'failed', 'skipped'
+    }
+}
+
+tasks.named('jar') {
+    archiveBaseName = 'Stroemwerk'
+    doLast {
+        if (!serverJar.exists()) {
+            logger.warn('Diese Jar enthaelt kein Plugin-Einstiegspunkt, weil HytaleServer.jar fehlte.')
+        }
+    }
+}

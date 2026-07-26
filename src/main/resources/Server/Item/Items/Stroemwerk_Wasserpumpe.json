@@ -1,0 +1,28 @@
+{
+  "TranslationProperties": {
+    "Name": "server.Stroemwerk_Wasserpumpe.name"
+  },
+  "MaxStack": 100,
+  "Icon": "Icons/ItemsGenerated/Stroemwerk_Wasserpumpe.png",
+  "Categories": ["Blocks.Rocks"],
+  "PlayerAnimationsId": "Block",
+  "Set": "Rock_Stone",
+  "BlockType": {
+    "Material": "Solid",
+    "DrawType": "Cube",
+    "Group": "Stone",
+    "Flags": {},
+    "Gathering": {
+      "Breaking": {
+        "GatherType": "Rocks",
+        "ItemId": "Stroemwerk_Wasserpumpe"
+      }
+    },
+    "BlockParticleSetId": "Stone",
+    "Textures": [{"All": "BlockTextures/Stroemwerk_Wasserpumpe.png"}],
+    "ParticleColor": "#6ec8f0",
+    "BlockSoundSetId": "Stone",
+    "BlockBreakingDecalId": "Breaking_Decals_Rock"
+  },
+  "ResourceTypes": [{"Id": "Rock"}]
+}

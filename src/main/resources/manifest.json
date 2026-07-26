@@ -1,0 +1,18 @@
+{
+  "Group": "de.tmjh",
+  "Name": "Stroemwerk",
+  "Version": "0.1.0",
+  "Description": "Transport mit Wasserkraft: Pumpen erzeugen Stroemung, Kanaele tragen Gegenstaende weiter.",
+  "Authors": [
+    {
+      "Name": "Tom",
+      "Email": "Tom@tmjh.de"
+    }
+  ],
+  "ServerVersion": "*",
+  "Dependencies": {},
+  "OptionalDependencies": {},
+  "DisabledByDefault": false,
+  "IncludesAssetPack": true,
+  "Main": "de.tmjh.stroemwerk.hytale.StroemwerkPlugin"
+}
