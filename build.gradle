@@ -75,6 +75,39 @@ tasks.named('jar') {
     }
 }
 
+// Legt jede gebaute Jar durchnummeriert in out/ ab, damit sich zwei Staende
+// im Spiel vergleichen lassen. Der Zaehler liegt in out/build-number.txt und
+// ist nicht eingecheckt - die Nummern gelten also nur auf diesem Rechner.
+def outDir = layout.projectDirectory.dir('out').asFile
+def builtJar = tasks.named('jar', Jar).flatMap { it.archiveFile }
+def projectVersion = version.toString()
+
+tasks.register('archiveJar') {
+    group = 'build'
+    description = 'Kopiert die gebaute Jar mit fortlaufender Build-Nummer nach out/.'
+
+    // Haengt an test, damit aus einem roten Build keine Jar in out/ landet.
+    dependsOn tasks.named('jar'), tasks.named('test')
+
+    // Jeder Build soll seine eigene Nummer bekommen, nie uebersprungen werden.
+    outputs.upToDateWhen { false }
+
+    doLast {
+        outDir.mkdirs()
+        def counter = new File(outDir, 'build-number.txt')
+        def number = (counter.exists() ? counter.text.trim() as int : 0) + 1
+        counter.text = "$number\n"
+
+        def target = new File(outDir, "Stroemwerk-${projectVersion}-b${number}.jar")
+        target.bytes = builtJar.get().asFile.bytes
+        logger.lifecycle("-> out/${target.name}")
+    }
+}
+
+tasks.named('build') {
+    finalizedBy 'archiveJar'
+}
+
 // Baut die Bloecke als reines Asset-Pack, also ohne Java-Anteil. Damit lassen
 // sich Texturen und Item-Definitionen im Spiel ansehen, bevor das Plugin
 // vollstaendig angebunden ist. Ergebnis nach UserData/Packs/ kopieren.
