@@ -48,6 +48,7 @@ siehe [libraries/README.md](libraries/README.md). **Ohne** die Jar baut und
 testet das Projekt trotzdem — dann bleibt nur das Paket `hytale` außen vor.
 
 Installiert wird die fertige Jar im `mods/`-Verzeichnis des Servers.
+C:\Users\<Username>\AppData\Roaming\Hytale\UserData\Mods
 
 ## Aufbau
 
