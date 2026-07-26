@@ -12,6 +12,7 @@ final class TestWorld implements WorldView {
 
     private final Map<BlockPos, NodeType> types = new HashMap<>();
     private final Map<BlockPos, Direction> facings = new HashMap<>();
+    private final Map<BlockPos, Boolean> gates = new HashMap<>();
     private final List<BlockPos> pumps = new ArrayList<>();
 
     TestWorld channel(int x, int y, int z) {
@@ -37,6 +38,19 @@ final class TestWorld implements WorldView {
         return this;
     }
 
+    TestWorld gate(int x, int y, int z, boolean open) {
+        BlockPos pos = new BlockPos(x, y, z);
+        types.put(pos, NodeType.GATE);
+        gates.put(pos, open);
+        return this;
+    }
+
+    /** Schaltet eine bestehende Schleuse um. */
+    TestWorld setGate(int x, int y, int z, boolean open) {
+        gates.put(new BlockPos(x, y, z), open);
+        return this;
+    }
+
     List<BlockPos> pumps() {
         return pumps;
     }
@@ -57,5 +71,10 @@ final class TestWorld implements WorldView {
     @Override
     public Direction pumpFacing(BlockPos pos) {
         return facings.get(pos);
+    }
+
+    @Override
+    public boolean isGateOpen(BlockPos pos) {
+        return gates.getOrDefault(pos, true);
     }
 }

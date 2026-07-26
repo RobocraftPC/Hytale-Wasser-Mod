@@ -1,11 +1,12 @@
 package de.tmjh.stroemwerk.hytale;
 
 import com.hypixel.hytale.server.core.universe.world.World;
-import de.tmjh.stroemwerk.Stroemwerk;
 import de.tmjh.stroemwerk.flow.BlockPos;
 import de.tmjh.stroemwerk.flow.Direction;
 import de.tmjh.stroemwerk.flow.NodeType;
 import de.tmjh.stroemwerk.flow.WorldView;
+import de.tmjh.stroemwerk.platform.BlockIds;
+import de.tmjh.stroemwerk.platform.GateStateStore;
 
 /**
  * Uebersetzt die Hytale-Welt in die schlanke {@link WorldView}, mit der die
@@ -19,25 +20,18 @@ import de.tmjh.stroemwerk.flow.WorldView;
 public final class HytaleWorldView implements WorldView {
 
     private final World world;
-    private final int channelBlockId;
-    private final int pumpBlockId;
+    private final BlockIds blockIds;
+    private final GateStateStore gates;
 
-    public HytaleWorldView(World world, int channelBlockId, int pumpBlockId) {
+    public HytaleWorldView(World world, BlockIds blockIds, GateStateStore gates) {
         this.world = world;
-        this.channelBlockId = channelBlockId;
-        this.pumpBlockId = pumpBlockId;
+        this.blockIds = blockIds;
+        this.gates = gates;
     }
 
     @Override
     public NodeType typeAt(BlockPos pos) {
-        int id = world.getBlock(pos.x(), pos.y(), pos.z());
-        if (id == channelBlockId) {
-            return NodeType.CHANNEL;
-        }
-        if (id == pumpBlockId) {
-            return NodeType.PUMP;
-        }
-        return NodeType.NONE;
+        return blockIds.typeOf(world.getBlock(pos.x(), pos.y(), pos.z()));
     }
 
     @Override
@@ -48,26 +42,16 @@ public final class HytaleWorldView implements WorldView {
         return BlockFacing.of(world, pos);
     }
 
+    @Override
+    public boolean isGateOpen(BlockPos pos) {
+        return gates.isOpen(world.getName(), pos);
+    }
+
     public World world() {
         return world;
     }
 
-    public int channelBlockId() {
-        return channelBlockId;
-    }
-
-    public int pumpBlockId() {
-        return pumpBlockId;
-    }
-
-    /**
-     * Bezeichner der Bauteile, wie sie in den Item-Definitionen stehen.
-     */
-    public static String channelItemId() {
-        return Stroemwerk.CHANNEL_ITEM_ID;
-    }
-
-    public static String pumpItemId() {
-        return Stroemwerk.PUMP_ITEM_ID;
+    public BlockIds blockIds() {
+        return blockIds;
     }
 }

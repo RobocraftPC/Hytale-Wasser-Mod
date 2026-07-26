@@ -30,11 +30,17 @@ public class WasserbahnCommand extends CommandBase {
         FlowNetwork network = service.network();
 
         context.sendMessage(Message.raw("Wasserbahn"));
-        context.sendMessage(Message.raw("  Pumpen:            " + service.knownPumps().size()));
-        context.sendMessage(Message.raw("  Fliessende Kanaele: " + network.nodes().size()));
-        context.sendMessage(Message.raw("  Blockiert:          " + network.contestedPositions().size()));
-        context.sendMessage(Message.raw("  Reichweite:         " + network.maxStrength() + " Bloecke"));
-        context.sendMessage(Message.raw("  Neuberechnungen:    " + service.rebuildCount()));
+        context.sendMessage(Message.raw("  Pumpen:              " + service.knownPumps().size()));
+        context.sendMessage(Message.raw("  Fliessende Kanaele:  " + network.nodes().size()));
+        context.sendMessage(Message.raw("  Blockiert:           " + network.contestedPositions().size()));
+        context.sendMessage(Message.raw("  Geschlossene Schleusen: " + runtime.gates().closedCount()));
+        context.sendMessage(Message.raw("  Reichweite:          " + network.maxStrength() + " Bloecke"));
+        context.sendMessage(Message.raw("  Neuberechnungen:     " + service.rebuildCount()));
+
+        if (!runtime.blockIds().anyResolved()) {
+            context.sendMessage(Message.raw(
+                    "  Achtung: keine Block-IDs aufgeloest, die Wasserbahn ist untaetig."));
+        }
 
         if (!network.contestedPositions().isEmpty()) {
             context.sendMessage(Message.raw("  Gegenstroemung an: "

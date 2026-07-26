@@ -14,6 +14,9 @@ public final class Stroemwerk {
     /** Wasserpumpe - erzeugt Stroemung in Blickrichtung. */
     public static final String PUMP_ITEM_ID = "Stroemwerk_Wasserpumpe";
 
+    /** Schleuse - Kanal, der sich schliessen laesst. */
+    public static final String GATE_ITEM_ID = "Stroemwerk_Schleuse";
+
     private Stroemwerk() {
     }
 }

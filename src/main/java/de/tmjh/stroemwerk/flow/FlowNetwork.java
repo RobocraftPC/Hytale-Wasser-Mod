@@ -96,7 +96,7 @@ public final class FlowNetwork {
         }
 
         BlockPos first = pump.offset(facing);
-        if (world.typeAt(first) != NodeType.CHANNEL) {
+        if (!world.conducts(first)) {
             return;
         }
 
@@ -134,18 +134,19 @@ public final class FlowNetwork {
 
     /**
      * Moegliche Weiterleitungen aus einem Kanal heraus: geradeaus zuerst, dann
-     * Abzweige. Zurueck geht es nie - das Wasser kommt ja von dort.
+     * Abzweige. Zurueck geht es nie - das Wasser kommt ja von dort. Eine
+     * geschlossene Schleuse zaehlt nicht als Ausgang und sperrt damit.
      */
     private static List<Direction> exitsFrom(WorldView world, BlockPos pos, Direction incoming) {
         List<Direction> exits = new ArrayList<>(4);
-        if (world.typeAt(pos.offset(incoming)) == NodeType.CHANNEL) {
+        if (world.conducts(pos.offset(incoming))) {
             exits.add(incoming);
         }
         for (Direction candidate : Direction.values()) {
             if (candidate == incoming || candidate == incoming.opposite()) {
                 continue;
             }
-            if (world.typeAt(pos.offset(candidate)) == NodeType.CHANNEL) {
+            if (world.conducts(pos.offset(candidate))) {
                 exits.add(candidate);
             }
         }

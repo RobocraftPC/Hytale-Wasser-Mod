@@ -39,12 +39,13 @@ public final class ChannelNetworkService {
      * nicht jedes Mal die halbe Welt absuchen muss.
      */
     public void onBlockChanged(BlockPos pos) {
-        if (world.typeAt(pos) == NodeType.PUMP) {
+        NodeType type = world.typeAt(pos);
+        if (type == NodeType.PUMP) {
             pumps.add(pos);
             dirty = true;
         } else if (pumps.remove(pos)) {
             dirty = true;
-        } else if (world.typeAt(pos) == NodeType.CHANNEL || network.at(pos) != null) {
+        } else if (type == NodeType.CHANNEL || type == NodeType.GATE || network.at(pos) != null) {
             // Ein Kanal kam dazu oder verschwand - die Strecken verschieben sich.
             dirty = true;
         }
@@ -72,6 +73,11 @@ public final class ChannelNetworkService {
     /** Erzwingt eine Neuberechnung beim naechsten Zugriff. */
     public void invalidate() {
         dirty = true;
+    }
+
+    /** Welches Bauteil an dieser Position steht. */
+    public NodeType typeAt(BlockPos pos) {
+        return world.typeAt(pos);
     }
 
     public Set<BlockPos> knownPumps() {

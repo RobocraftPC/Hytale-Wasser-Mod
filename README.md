@@ -23,9 +23,25 @@ Gegenstände mit.
 - Gegenstände werden zur Kanalmitte gezogen, damit sie nicht an den Wänden
   hängenbleiben.
 
+### Schleuse
+
+Die **Schleuse** ist ein Kanal, der sich schließen lässt. Offen verhält sie
+sich wie ein normaler Kanalstück, geschlossen sperrt sie — die Strecke
+dahinter fällt trocken und Gegenstände bleiben davor liegen. Frisch gesetzt
+steht sie offen.
+
+Damit lassen sich drei Dinge bauen, die vorher nicht gingen:
+
+- Eine Strecke **abstellen**, ohne Blöcke abzubauen.
+- An einer Gabelung **umleiten**: geradeaus hat normalerweise Vorrang, mit
+  geschlossener Schleuse nimmt die Strömung den Abzweig.
+- Eine **Pattsituation auflösen**, in der zwei gleich starke Pumpen sich
+  gegenseitig blockieren.
+
 `/wasserbahn` zeigt an, was das Netz gerade berechnet hat — Anzahl Pumpen,
-fließende Kanäle und blockierte Stellen. Bei langen Strecken ist das die
-schnellste Art herauszufinden, warum irgendwo nichts läuft.
+fließende Kanäle, geschlossene Schleusen und blockierte Stellen. Bei langen
+Strecken ist das die schnellste Art herauszufinden, warum irgendwo nichts
+läuft.
 
 ## Bauen
 
@@ -63,7 +79,7 @@ Der Mod ist bewusst in zwei Hälften geteilt:
 Die eigentliche Mechanik — wie sich Druck ausbreitet, wo Strömungen sich
 aufheben, wie schnell ein Gegenstand treibt — hängt an keiner einzigen
 Hytale-Klasse. Sie arbeitet gegen das schmale Interface `WorldView` und ist
-damit ohne laufenden Server testbar. Deshalb gibt es 28 Tests, die in
+damit ohne laufenden Server testbar. Deshalb gibt es 41 Tests, die in
 Sekunden durchlaufen, statt jede Änderung im Spiel nachstellen zu müssen.
 
 Der Preis dafür ist eine Übersetzungsschicht in `hytale`. Die ist klein und
@@ -75,15 +91,18 @@ Der Mod kompiliert gegen eine echte `HytaleServer.jar`, laedt im Spiel und
 meldet sich im Log. Die Mechanik haengt aber an keinem Server-Event — drei
 Stellen sind noch nicht angeschlossen und im Code mit `ANPASSEN` markiert:
 
-1. **Block-IDs auflösen** (`StroemwerkPlugin.setup()`) — die IDs von
-   Wasserkanal und Wasserpumpe müssen aus der Item-Registry kommen, aktuell
-   stehen dort Platzhalter.
+1. **Block-IDs auflösen** (`StroemwerkPlugin.setup()`) — die IDs der drei
+   Bauteile müssen aus der Item-Registry kommen, aktuell steht dort
+   `BlockIds.NONE_RESOLVED`. Solange meldet das Plugin beim Start eine Warnung
+   und `/wasserbahn` weist darauf hin, statt still nichts zu tun.
 2. **Blockrotation lesen** (`BlockFacing`) — bis klar ist, wie Hytale die
    Ausrichtung eines platzierten Blocks ablegt, merkt sich das Plugin die
    Blickrichtung beim Platzieren selbst. Das überlebt keinen Serverneustart.
-3. **Bau-Events und Item-Transport** — `StroemwerkRuntime.onBlockChanged` und
-   `velocityAt` sind fertig und getestet, es fehlt nur die Verdrahtung an die
-   Block-Events und an die Item-Entities des Servers.
+3. **Bau-Events, Schleusen-Interaktion und Item-Transport** —
+   `StroemwerkRuntime.onBlockChanged`, `onBlockRemoved`, `toggleGate` und
+   `velocityAt` sind fertig und getestet. Es fehlt die Verdrahtung an
+   `PlaceBlockEvent`/`BreakBlockEvent`, an `UseBlockEvent` zum Schalten der
+   Schleuse und an die Item-Entities des Servers.
 
 Ebenfalls noch offen: Die Blöcke benutzen Platzhaltertexturen
 (`tools/make_textures.py`) und einfache Würfelmodelle. Ein Kanal sollte ein
@@ -94,6 +113,6 @@ gehört auf eine eigene umgestellt.
 
 - Trichter, der Gegenstände aus einer Kiste in den Kanal wirft
 - Abscheider am Streckenende, der wieder in eine Kiste einsortiert
-- Schleuse als schaltbarer Kanal, damit sich Strecken umleiten lassen
 - Wasserrad als Antrieb für die Pumpe, statt sie einfach laufen zu lassen
 - Konfigurierbare Reichweite und Geschwindigkeit über die Plugin-Config
+- Schleusen dauerhaft speichern, damit sie einen Serverneustart überstehen

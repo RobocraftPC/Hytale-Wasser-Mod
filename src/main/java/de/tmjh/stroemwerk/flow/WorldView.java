@@ -18,4 +18,26 @@ public interface WorldView {
      * Richtung, in die eine Pumpe drueckt. Nur fuer {@link NodeType#PUMP} definiert.
      */
     Direction pumpFacing(BlockPos pos);
+
+    /**
+     * Ob eine Schleuse offen steht. Nur fuer {@link NodeType#GATE} definiert.
+     *
+     * <p>Standardmaessig offen, damit einfache Implementierungen ohne
+     * Schleusen nichts ueberschreiben muessen.
+     */
+    default boolean isGateOpen(BlockPos pos) {
+        return true;
+    }
+
+    /**
+     * Ob an dieser Position Stroemung weitergeleitet wird - also ein Kanal
+     * liegt oder eine offene Schleuse.
+     */
+    default boolean conducts(BlockPos pos) {
+        return switch (typeAt(pos)) {
+            case CHANNEL -> true;
+            case GATE -> isGateOpen(pos);
+            case NONE, PUMP -> false;
+        };
+    }
 }

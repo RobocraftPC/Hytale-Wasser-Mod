@@ -9,5 +9,7 @@ public enum NodeType {
     /** Wasserkanal - leitet Stroemung weiter und traegt Gegenstaende. */
     CHANNEL,
     /** Wasserpumpe - erzeugt Stroemung in Blickrichtung. */
-    PUMP
+    PUMP,
+    /** Schleuse - Kanal, der sich schliessen laesst und dann sperrt. */
+    GATE
 }

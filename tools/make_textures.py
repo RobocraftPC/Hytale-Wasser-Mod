@@ -90,9 +90,34 @@ def pump():
     return rows
 
 
+def gate():
+    """Kanal mit Gittertor davor."""
+    stone_dark = (86, 92, 99, 255)
+    water = (58, 141, 204, 255)
+    bar = (172, 182, 192, 255)
+    bar_dark = (120, 130, 140, 255)
+
+    rows = []
+    for y in range(SIZE):
+        row = []
+        for x in range(SIZE):
+            edge = min(x, y, SIZE - 1 - x, SIZE - 1 - y)
+            if edge == 0:
+                row.append(stone_dark)
+            elif x % 5 in (2, 3):
+                row.append(bar if x % 5 == 2 else bar_dark)
+            elif y in (3, 12):
+                row.append(bar_dark)
+            else:
+                row.append(water)
+        rows.append(row)
+    return rows
+
+
 def main():
     for name, pixels in (("Stroemwerk_Wasserkanal", channel()),
-                         ("Stroemwerk_Wasserpumpe", pump())):
+                         ("Stroemwerk_Wasserpumpe", pump()),
+                         ("Stroemwerk_Schleuse", gate())):
         write_png(os.path.join(TEXTURES, name + ".png"), pixels)
         write_png(os.path.join(ICONS, name + ".png"), pixels)
 
