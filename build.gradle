@@ -74,3 +74,30 @@ tasks.named('jar') {
         }
     }
 }
+
+// Baut die Bloecke als reines Asset-Pack, also ohne Java-Anteil. Damit lassen
+// sich Texturen und Item-Definitionen im Spiel ansehen, bevor das Plugin
+// vollstaendig angebunden ist. Ergebnis nach UserData/Packs/ kopieren.
+tasks.register('assetPack', Copy) {
+    group = 'stroemwerk'
+    description = 'Legt das Asset-Pack unter build/pack/Stroemwerk ab'
+
+    from('src/main/resources') {
+        include 'Common/**'
+        include 'Server/**'
+    }
+    into layout.buildDirectory.dir('pack/Stroemwerk')
+
+    doLast {
+        // Ein Pack laedt ohne Plugin, darf also nicht auf eine Hauptklasse zeigen.
+        def full = new groovy.json.JsonSlurper().parse(file('src/main/resources/manifest.json'))
+        full.remove('Main')
+        full.remove('IncludesAssetPack')
+        def target = layout.buildDirectory.file('pack/Stroemwerk/manifest.json').get().asFile
+        target.text = groovy.json.JsonOutput.prettyPrint(groovy.json.JsonOutput.toJson(full))
+
+        logger.lifecycle("Asset-Pack fertig: ${target.parentFile}")
+        logger.lifecycle('Diesen Ordner nach %appdata%/Hytale/UserData/Packs/ kopieren ' +
+                'und in den Welteinstellungen aktivieren.')
+    }
+}
