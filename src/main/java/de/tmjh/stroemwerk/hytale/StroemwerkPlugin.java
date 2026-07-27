@@ -36,6 +36,7 @@ public class StroemwerkPlugin extends JavaPlugin {
 
         getEntityStoreRegistry().registerSystem(new BlockChangeSystems.Place(runtime));
         getEntityStoreRegistry().registerSystem(new BlockChangeSystems.Break(runtime));
+        getEntityStoreRegistry().registerSystem(new BlockChangeSystems.Use(runtime));
 
         if (missing.isEmpty()) {
             getLogger().at(Level.INFO).log("Stroemwerk geladen - Wasserbahn bereit");

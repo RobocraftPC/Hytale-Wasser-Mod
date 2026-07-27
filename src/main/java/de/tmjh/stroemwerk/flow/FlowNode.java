@@ -19,7 +19,9 @@ public record FlowNode(Direction direction, int strength, BlockPos source) {
         if (maxStrength <= 1) {
             return maxSpeed;
         }
-        double ratio = (double) (strength - 1) / (double) (maxStrength - 1);
+        // Wasserraeder koennen den Druck ueber den Grundwert heben. Das soll
+        // die Reichweite verlaengern, nicht das Tempo ins Unermessliche treiben.
+        double ratio = Math.min(1.0, (double) (strength - 1) / (double) (maxStrength - 1));
         return minSpeed + (maxSpeed - minSpeed) * ratio;
     }
 }

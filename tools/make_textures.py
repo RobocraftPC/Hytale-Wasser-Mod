@@ -114,10 +114,40 @@ def gate():
     return rows
 
 
+def wheel():
+    """Holzrad mit Speichen."""
+    wood_dark = (94, 66, 41, 255)
+    wood = (138, 98, 60, 255)
+    wood_light = (176, 132, 86, 255)
+    gap = (52, 58, 64, 255)
+
+    center = (SIZE - 1) / 2.0
+    rows = []
+    for y in range(SIZE):
+        row = []
+        for x in range(SIZE):
+            dx = x - center
+            dy = y - center
+            distance = (dx * dx + dy * dy) ** 0.5
+            if distance > 7.4:
+                row.append(gap)
+            elif distance > 6.0:
+                row.append(wood_dark)          # Felge
+            elif distance < 1.8:
+                row.append(wood_light)         # Nabe
+            elif abs(dx) < 1.0 or abs(dy) < 1.0 or abs(abs(dx) - abs(dy)) < 1.0:
+                row.append(wood)               # Speichen
+            else:
+                row.append(gap)
+        rows.append(row)
+    return rows
+
+
 def main():
     for name, pixels in (("Stroemwerk_Wasserkanal", channel()),
                          ("Stroemwerk_Wasserpumpe", pump()),
-                         ("Stroemwerk_Schleuse", gate())):
+                         ("Stroemwerk_Schleuse", gate()),
+                         ("Stroemwerk_Wasserrad", wheel())):
         write_png(os.path.join(TEXTURES, name + ".png"), pixels)
         write_png(os.path.join(ICONS, name + ".png"), pixels)
 

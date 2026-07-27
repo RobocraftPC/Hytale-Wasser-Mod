@@ -11,5 +11,7 @@ public enum NodeType {
     /** Wasserpumpe - erzeugt Stroemung in Blickrichtung. */
     PUMP,
     /** Schleuse - Kanal, der sich schliessen laesst und dann sperrt. */
-    GATE
+    GATE,
+    /** Wasserrad - treibt eine angrenzende Pumpe an und erhoeht deren Druck. */
+    WHEEL
 }

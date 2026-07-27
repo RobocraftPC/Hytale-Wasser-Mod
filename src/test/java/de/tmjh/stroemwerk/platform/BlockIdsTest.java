@@ -13,11 +13,12 @@ class BlockIdsTest {
     @Test
     @DisplayName("Bekannte IDs werden ihrem Bauteil zugeordnet")
     void mapsKnownIds() {
-        BlockIds ids = new BlockIds(10, 20, 30);
+        BlockIds ids = new BlockIds(10, 20, 30, 40);
 
         assertEquals(NodeType.CHANNEL, ids.typeOf(10));
         assertEquals(NodeType.PUMP, ids.typeOf(20));
         assertEquals(NodeType.GATE, ids.typeOf(30));
+        assertEquals(NodeType.WHEEL, ids.typeOf(40));
         assertEquals(NodeType.NONE, ids.typeOf(999));
     }
 
@@ -26,7 +27,7 @@ class BlockIdsTest {
     void unresolvedNeverMatches() {
         // Luft hat oft die ID 0, ein nicht gefundenes Bauteil die -1. Ohne
         // Sonderbehandlung wuerde jeder unbekannte Block zum Kanal.
-        BlockIds ids = new BlockIds(BlockIds.UNKNOWN, 20, BlockIds.UNKNOWN);
+        BlockIds ids = new BlockIds(BlockIds.UNKNOWN, 20, BlockIds.UNKNOWN, BlockIds.UNKNOWN);
 
         assertEquals(NodeType.NONE, ids.typeOf(BlockIds.UNKNOWN));
         assertEquals(NodeType.NONE, ids.typeOf(0));
@@ -37,6 +38,6 @@ class BlockIdsTest {
     @DisplayName("Ohne aufgeloeste IDs meldet sich der Mod als nicht bereit")
     void reportsWhetherAnythingResolved() {
         assertFalse(BlockIds.NONE_RESOLVED.anyResolved());
-        assertTrue(new BlockIds(1, BlockIds.UNKNOWN, BlockIds.UNKNOWN).anyResolved());
+        assertTrue(new BlockIds(1, BlockIds.UNKNOWN, BlockIds.UNKNOWN, BlockIds.UNKNOWN).anyResolved());
     }
 }

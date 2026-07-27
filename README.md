@@ -25,6 +25,16 @@ Gegenstände mit.
 - Gegenstände werden zur Kanalmitte gezogen, damit sie nicht an den Wänden
   hängenbleiben.
 
+### Wasserrad
+
+Das **Wasserrad** treibt eine Pumpe an, an der es direkt anliegt — egal an
+welcher der sechs Seiten. Jedes Rad verlängert die Reichweite dieser Pumpe um
+16 Blöcke, höchstens zwei Räder zählen. Aus 32 Blöcken werden so bis zu 64.
+
+Mehr Druck macht **nicht schneller**, nur weiter: das Tempo bleibt bei
+4 Blöcken pro Sekunde gedeckelt. Ein Rad ist selbst kein Kanal — Strömung
+fließt nicht hindurch.
+
 ### Schleuse
 
 Die **Schleuse** ist ein Kanal, der sich schließen lässt. Offen verhält sie
@@ -39,6 +49,8 @@ Damit lassen sich drei Dinge bauen, die vorher nicht gingen:
   geschlossener Schleuse nimmt die Strömung den Abzweig.
 - Eine **Pattsituation auflösen**, in der zwei gleich starke Pumpen sich
   gegenseitig blockieren.
+
+Ein **Rechtsklick** auf eine Schleuse legt sie um.
 
 `/wasserbahn` zeigt an, was das Netz gerade berechnet hat — Anzahl Pumpen,
 fließende Kanäle, geschlossene Schleusen und blockierte Stellen. Bei langen
@@ -81,7 +93,7 @@ Der Mod ist bewusst in zwei Hälften geteilt:
 Die eigentliche Mechanik — wie sich Druck ausbreitet, wo Strömungen sich
 aufheben, wie schnell ein Gegenstand treibt — hängt an keiner einzigen
 Hytale-Klasse. Sie arbeitet gegen das schmale Interface `WorldView` und ist
-damit ohne laufenden Server testbar. Deshalb gibt es 47 Tests, die in
+damit ohne laufenden Server testbar. Deshalb gibt es 54 Tests, die in
 Sekunden durchlaufen, statt jede Änderung im Spiel nachstellen zu müssen.
 
 Der Preis dafür ist eine Übersetzungsschicht in `hytale`. Die ist klein und
@@ -99,9 +111,7 @@ Zahlen. Was noch fehlt:
    Tick-System, das die Gegenstände im Kanal einsammelt und diese
    Geschwindigkeit auf sie anwendet. Bis dahin fließt Wasser, aber nichts
    fährt darin.
-2. **Schleuse schalten** — `StroemwerkRuntime.toggleGate` ist fertig, es fehlt
-   die Anbindung an `UseBlockEvent.Pre`, damit ein Rechtsklick sie umlegt.
-3. **Blockrotation lesen** (`BlockFacing`) — nicht mehr dringend, seit die
+2. **Blockrotation lesen** (`BlockFacing`) — nicht mehr dringend, seit die
    Pumpe sich ihren Kanal selbst sucht. Mit auslesbarer Rotation ließe sich
    die Richtung genauer steuern.
 
@@ -119,6 +129,5 @@ gehört auf eine eigene umgestellt.
 
 - Trichter, der Gegenstände aus einer Kiste in den Kanal wirft
 - Abscheider am Streckenende, der wieder in eine Kiste einsortiert
-- Wasserrad als Antrieb für die Pumpe, statt sie einfach laufen zu lassen
 - Konfigurierbare Reichweite und Geschwindigkeit über die Plugin-Config
 - Schleusen dauerhaft speichern, damit sie einen Serverneustart überstehen

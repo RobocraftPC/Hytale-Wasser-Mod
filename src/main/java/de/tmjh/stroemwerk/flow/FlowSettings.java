@@ -8,12 +8,15 @@ package de.tmjh.stroemwerk.flow;
  * @param minSpeed      Transportgeschwindigkeit am Ende der Reichweite
  * @param centering     wie stark Gegenstaende zur Kanalmitte gezogen werden
  * @param maxCentering  Deckel fuer die Zentrierung, damit nichts zappelt
+ * @param wheelBonus    zusaetzliche Reichweite je Wasserrad an der Pumpe
+ * @param maxWheels     wie viele Wasserraeder eine Pumpe hoechstens nutzt
  */
 public record FlowSettings(int maxStrength, double maxSpeed, double minSpeed,
-                           double centering, double maxCentering) {
+                           double centering, double maxCentering,
+                           int wheelBonus, int maxWheels) {
 
     public static final FlowSettings DEFAULT =
-            new FlowSettings(FlowNetwork.DEFAULT_MAX_STRENGTH, 4.0, 1.0, 4.0, 1.5);
+            new FlowSettings(FlowNetwork.DEFAULT_MAX_STRENGTH, 4.0, 1.0, 4.0, 1.5, 16, 2);
 
     public FlowSettings {
         if (maxStrength < 1) {

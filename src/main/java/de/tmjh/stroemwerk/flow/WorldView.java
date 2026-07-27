@@ -37,8 +37,21 @@ public interface WorldView {
         return switch (typeAt(pos)) {
             case CHANNEL -> true;
             case GATE -> isGateOpen(pos);
-            case NONE, PUMP -> false;
+            case NONE, PUMP, WHEEL -> false;
         };
+    }
+
+    /**
+     * Zaehlt die Wasserraeder, die direkt an dieser Pumpe anliegen.
+     */
+    default int wheelsAround(BlockPos pump) {
+        int count = 0;
+        for (Direction direction : Direction.values()) {
+            if (typeAt(pump.offset(direction)) == NodeType.WHEEL) {
+                count++;
+            }
+        }
+        return count;
     }
 
     /**

@@ -32,7 +32,8 @@ public final class BlockIdResolver {
         return new BlockIds(
                 indexOf(Stroemwerk.CHANNEL_ITEM_ID, onMissing),
                 indexOf(Stroemwerk.PUMP_ITEM_ID, onMissing),
-                indexOf(Stroemwerk.GATE_ITEM_ID, onMissing));
+                indexOf(Stroemwerk.GATE_ITEM_ID, onMissing),
+                indexOf(Stroemwerk.WHEEL_ITEM_ID, onMissing));
     }
 
     private static int indexOf(String blockTypeId, Consumer<String> onMissing) {

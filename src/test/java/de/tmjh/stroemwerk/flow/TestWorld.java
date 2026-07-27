@@ -45,6 +45,11 @@ class TestWorld implements WorldView {
         return this;
     }
 
+    TestWorld wheel(int x, int y, int z) {
+        types.put(new BlockPos(x, y, z), NodeType.WHEEL);
+        return this;
+    }
+
     /** Schaltet eine bestehende Schleuse um. */
     TestWorld setGate(int x, int y, int z, boolean open) {
         gates.put(new BlockPos(x, y, z), open);

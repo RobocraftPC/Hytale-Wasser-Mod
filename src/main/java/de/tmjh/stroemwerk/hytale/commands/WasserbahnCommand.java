@@ -34,8 +34,20 @@ public class WasserbahnCommand extends CommandBase {
         context.sendMessage(Message.raw("  Fliessende Kanaele:  " + network.nodes().size()));
         context.sendMessage(Message.raw("  Blockiert:           " + network.contestedPositions().size()));
         context.sendMessage(Message.raw("  Geschlossene Schleusen: " + runtime.gates().closedCount()));
-        context.sendMessage(Message.raw("  Reichweite:          " + network.maxStrength() + " Bloecke"));
+        context.sendMessage(Message.raw("  Grundreichweite:     " + network.maxStrength() + " Bloecke"));
         context.sendMessage(Message.raw("  Neuberechnungen:     " + service.rebuildCount()));
+
+        // Bei mehreren Pumpen ist der staerkste Druck der aussagekraeftigste
+        // Wert - daran sieht man, ob die Wasserraeder greifen.
+        network.nodes().values().stream()
+                .mapToInt(node -> node.strength())
+                .max()
+                .ifPresent(peak -> {
+                    if (peak > network.maxStrength()) {
+                        context.sendMessage(Message.raw(
+                                "  Mit Wasserrad:       " + peak + " Bloecke"));
+                    }
+                });
 
         if (!runtime.blockIds().anyResolved()) {
             context.sendMessage(Message.raw(

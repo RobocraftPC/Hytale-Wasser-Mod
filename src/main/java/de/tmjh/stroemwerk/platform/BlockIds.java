@@ -10,12 +10,12 @@ import de.tmjh.stroemwerk.flow.NodeType;
  * sich der Mod so, als gaebe es das Bauteil nicht, statt zufaellig irgendeinen
  * Block als Kanal zu behandeln.
  */
-public record BlockIds(int channel, int pump, int gate) {
+public record BlockIds(int channel, int pump, int gate, int wheel) {
 
     /** Nicht aufgeloest. Wird nie einem echten Block zugeordnet. */
     public static final int UNKNOWN = -1;
 
-    public static final BlockIds NONE_RESOLVED = new BlockIds(UNKNOWN, UNKNOWN, UNKNOWN);
+    public static final BlockIds NONE_RESOLVED = new BlockIds(UNKNOWN, UNKNOWN, UNKNOWN, UNKNOWN);
 
     /**
      * Ordnet eine Block-ID einem Bauteil zu.
@@ -33,11 +33,14 @@ public record BlockIds(int channel, int pump, int gate) {
         if (blockId == gate) {
             return NodeType.GATE;
         }
+        if (blockId == wheel) {
+            return NodeType.WHEEL;
+        }
         return NodeType.NONE;
     }
 
     /** Ob ueberhaupt ein Bauteil aufgeloest werden konnte. */
     public boolean anyResolved() {
-        return channel != UNKNOWN || pump != UNKNOWN || gate != UNKNOWN;
+        return channel != UNKNOWN || pump != UNKNOWN || gate != UNKNOWN || wheel != UNKNOWN;
     }
 }

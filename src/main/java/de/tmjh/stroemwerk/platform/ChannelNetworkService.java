@@ -1,6 +1,7 @@
 package de.tmjh.stroemwerk.platform;
 
 import de.tmjh.stroemwerk.flow.BlockPos;
+import de.tmjh.stroemwerk.flow.Direction;
 import de.tmjh.stroemwerk.flow.FlowNetwork;
 import de.tmjh.stroemwerk.flow.FlowNode;
 import de.tmjh.stroemwerk.flow.FlowSettings;
@@ -45,6 +46,10 @@ public final class ChannelNetworkService {
             dirty = true;
         } else if (pumps.remove(pos)) {
             dirty = true;
+        } else if (type == NodeType.WHEEL || isNextToPump(pos)) {
+            // Ein Wasserrad aendert den Druck der Pumpe daneben, ohne selbst
+            // Teil des Netzes zu sein. Auch sein Abbau muss daher auffallen.
+            dirty = true;
         } else if (type == NodeType.CHANNEL || type == NodeType.GATE || network.at(pos) != null) {
             // Ein Kanal kam dazu oder verschwand - die Strecken verschieben sich.
             dirty = true;
@@ -63,7 +68,7 @@ public final class ChannelNetworkService {
             // Zwischen den Neuberechnungen koennen Pumpen abgebaut worden sein,
             // ohne dass wir es gesehen haben (z.B. durch andere Plugins).
             pumps.removeIf(pump -> world.typeAt(pump) != NodeType.PUMP);
-            network = FlowNetwork.build(world, pumps, settings.maxStrength());
+            network = FlowNetwork.build(world, pumps, settings);
             dirty = false;
             rebuildCount++;
         }
@@ -78,6 +83,20 @@ public final class ChannelNetworkService {
     /** Welches Bauteil an dieser Position steht. */
     public NodeType typeAt(BlockPos pos) {
         return world.typeAt(pos);
+    }
+
+    /**
+     * Ob an dieser Stelle eine bekannte Pumpe angrenzt. Beim Abbau eines
+     * Wasserrads laesst sich nicht mehr feststellen, dass dort eines stand -
+     * die Nachbarschaft verraet es trotzdem.
+     */
+    private boolean isNextToPump(BlockPos pos) {
+        for (Direction direction : Direction.values()) {
+            if (pumps.contains(pos.offset(direction))) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public Set<BlockPos> knownPumps() {

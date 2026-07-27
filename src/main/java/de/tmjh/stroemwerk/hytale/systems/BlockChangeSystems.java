@@ -8,6 +8,7 @@ import com.hypixel.hytale.component.query.Query;
 import com.hypixel.hytale.component.system.EntityEventSystem;
 import com.hypixel.hytale.server.core.event.events.ecs.BreakBlockEvent;
 import com.hypixel.hytale.server.core.event.events.ecs.PlaceBlockEvent;
+import com.hypixel.hytale.server.core.event.events.ecs.UseBlockEvent;
 import com.hypixel.hytale.server.core.modules.entity.EntityStore;
 import com.hypixel.hytale.server.core.universe.world.World;
 import de.tmjh.stroemwerk.flow.BlockPos;
@@ -61,6 +62,41 @@ public final class BlockChangeSystems {
             // Beim Auswerten des Events steht der Block noch nicht in der Welt.
             // Erst auf dem Weltthread danach ist getBlock() aussagekraeftig.
             world.execute(() -> runtime.onBlockPlaced(world, pos));
+        }
+
+        @Override
+        public Query<EntityStore> getQuery() {
+            return Archetype.empty();
+        }
+    }
+
+    /**
+     * Rechtsklick auf eine Schleuse legt sie um.
+     *
+     * <p>Nur {@code Pre} wird ausgewertet - {@code Post} wuerde denselben Klick
+     * ein zweites Mal melden und die Schleuse sofort zurueckschalten.
+     */
+    public static final class Use extends EntityEventSystem<EntityStore, UseBlockEvent.Pre> {
+
+        private final StroemwerkRuntime runtime;
+
+        public Use(StroemwerkRuntime runtime) {
+            super(UseBlockEvent.Pre.class);
+            this.runtime = runtime;
+        }
+
+        @Override
+        public void handle(int index,
+                           @Nonnull ArchetypeChunk<EntityStore> chunk,
+                           @Nonnull Store<EntityStore> store,
+                           @Nonnull CommandBuffer<EntityStore> commandBuffer,
+                           @Nonnull UseBlockEvent.Pre event) {
+            World world = store.getExternalData().getWorld();
+            org.joml.Vector3i target = event.getTargetBlock();
+            BlockPos pos = new BlockPos(target.x, target.y, target.z);
+
+            // toggleGate prueft selbst, ob dort ueberhaupt eine Schleuse steht.
+            world.execute(() -> runtime.toggleGate(world, pos));
         }
 
         @Override

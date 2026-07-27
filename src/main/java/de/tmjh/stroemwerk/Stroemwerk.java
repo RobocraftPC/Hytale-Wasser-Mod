@@ -17,6 +17,9 @@ public final class Stroemwerk {
     /** Schleuse - Kanal, der sich schliessen laesst. */
     public static final String GATE_ITEM_ID = "Stroemwerk_Schleuse";
 
+    /** Wasserrad - treibt eine angrenzende Pumpe an. */
+    public static final String WHEEL_ITEM_ID = "Stroemwerk_Wasserrad";
+
     private Stroemwerk() {
     }
 }

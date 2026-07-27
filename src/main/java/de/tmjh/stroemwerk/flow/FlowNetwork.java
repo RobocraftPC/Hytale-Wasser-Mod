@@ -46,12 +46,25 @@ public final class FlowNetwork {
     }
 
     /**
+     * Baut das Netz mit allen Einstellungen auf, also auch mit dem Zuschlag
+     * durch Wasserraeder.
+     */
+    public static FlowNetwork build(WorldView world, Collection<BlockPos> pumps, FlowSettings settings) {
+        return build(world, pumps, settings.maxStrength(), settings);
+    }
+
+    /**
      * Baut das Netz aus allen bekannten Pumpen auf.
      *
      * @param pumps       Positionen aller Pumpen, die beruecksichtigt werden sollen
      * @param maxStrength Startdruck einer Pumpe und damit ihre Reichweite
      */
     public static FlowNetwork build(WorldView world, Collection<BlockPos> pumps, int maxStrength) {
+        return build(world, pumps, maxStrength, null);
+    }
+
+    private static FlowNetwork build(WorldView world, Collection<BlockPos> pumps, int maxStrength,
+                                     FlowSettings settings) {
         if (maxStrength < 1) {
             throw new IllegalArgumentException("maxStrength muss mindestens 1 sein, war " + maxStrength);
         }
@@ -67,7 +80,7 @@ public final class FlowNetwork {
             if (world.typeAt(pump) != NodeType.PUMP) {
                 continue;
             }
-            traceFromPump(world, pump, maxStrength, offers);
+            traceFromPump(world, pump, strengthOf(world, pump, maxStrength, settings), offers);
         }
 
         Map<BlockPos, FlowNode> resolved = new HashMap<>();
@@ -82,6 +95,18 @@ public final class FlowNetwork {
         }
 
         return new FlowNetwork(Map.copyOf(resolved), Set.copyOf(contested), maxStrength);
+    }
+
+    /**
+     * Startdruck einer einzelnen Pumpe. Angrenzende Wasserraeder treiben sie an
+     * und verlaengern damit ihre Reichweite.
+     */
+    private static int strengthOf(WorldView world, BlockPos pump, int maxStrength, FlowSettings settings) {
+        if (settings == null || settings.wheelBonus() <= 0 || settings.maxWheels() <= 0) {
+            return maxStrength;
+        }
+        int wheels = Math.min(world.wheelsAround(pump), settings.maxWheels());
+        return maxStrength + wheels * settings.wheelBonus();
     }
 
     /**
