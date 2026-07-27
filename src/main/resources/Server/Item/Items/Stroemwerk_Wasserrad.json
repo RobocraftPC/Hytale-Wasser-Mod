@@ -6,23 +6,23 @@
   "Icon": "Icons/ItemsGenerated/Stroemwerk_Wasserrad.png",
   "Categories": ["Blocks.Rocks"],
   "PlayerAnimationsId": "Block",
-  "Set": "Wood_Oak",
+  "Set": "Rock_Stone",
   "BlockType": {
     "Material": "Solid",
     "DrawType": "Cube",
-    "Group": "Wood",
+    "Group": "Stone",
     "Flags": {},
     "Gathering": {
       "Breaking": {
-        "GatherType": "Wood",
+        "GatherType": "Rocks",
         "ItemId": "Stroemwerk_Wasserrad"
       }
     },
-    "BlockParticleSetId": "Wood",
+    "BlockParticleSetId": "Stone",
     "Textures": [{"All": "BlockTextures/Stroemwerk_Wasserrad.png"}],
     "ParticleColor": "#8a623c",
-    "BlockSoundSetId": "Wood",
+    "BlockSoundSetId": "Stone",
     "BlockBreakingDecalId": "Breaking_Decals_Rock"
   },
-  "ResourceTypes": [{"Id": "Wood"}]
+  "ResourceTypes": [{"Id": "Rock"}]
 }
