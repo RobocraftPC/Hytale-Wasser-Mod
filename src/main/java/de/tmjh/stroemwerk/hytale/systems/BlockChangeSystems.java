@@ -9,7 +9,7 @@ import com.hypixel.hytale.component.system.EntityEventSystem;
 import com.hypixel.hytale.server.core.event.events.ecs.BreakBlockEvent;
 import com.hypixel.hytale.server.core.event.events.ecs.PlaceBlockEvent;
 import com.hypixel.hytale.server.core.event.events.ecs.UseBlockEvent;
-import com.hypixel.hytale.server.core.modules.entity.EntityStore;
+import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import com.hypixel.hytale.server.core.universe.world.World;
 import de.tmjh.stroemwerk.flow.BlockPos;
 import de.tmjh.stroemwerk.hytale.StroemwerkRuntime;
@@ -22,11 +22,6 @@ import javax.annotation.Nonnull;
  * {@code EntityEventSystem} statt eines gewoehnlichen Listeners. Beide Systeme
  * hier tun bewusst fast nichts: Position umrechnen, an die Laufzeit
  * weiterreichen. Was daraus folgt, entscheidet die getestete Netzlogik.
- *
- * <p>PRUEFEN: Die Importe aus {@code com.hypixel.hytale.component} und
- * {@code ...modules.entity.EntityStore} sind noch nicht gegen die Server-Jar
- * geprueft. Stimmt ein Paket nicht, lassen sich die Importe in der IDE
- * auffuellen - an der Logik aendert das nichts.
  */
 public final class BlockChangeSystems {
 

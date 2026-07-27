@@ -1,6 +1,6 @@
 package de.tmjh.stroemwerk.hytale;
 
-import com.hypixel.hytale.server.core.asset.type.block.config.BlockType;
+import com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockType;
 import de.tmjh.stroemwerk.Stroemwerk;
 import de.tmjh.stroemwerk.platform.BlockIds;
 import java.util.function.Consumer;
@@ -12,9 +12,6 @@ import java.util.function.Consumer;
  * BlockType-Registry, keinen Namen. Damit die Wasserbahn einen Kanal
  * wiedererkennt, muss dieser Index einmal zu Beginn nachgeschlagen werden.
  *
- * <p>PRUEFEN: Der Import von {@link BlockType} ist die einzige Zeile hier, die
- * noch nicht gegen die Server-Jar geprueft ist. Findet die IDE die Klasse unter
- * einem anderen Paket, muss nur dieser Import angepasst werden.
  */
 public final class BlockIdResolver {
 
