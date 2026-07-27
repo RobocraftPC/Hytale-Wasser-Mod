@@ -40,4 +40,29 @@ public interface WorldView {
             case NONE, PUMP -> false;
         };
     }
+
+    /**
+     * Richtung, in die eine Pumpe tatsaechlich drueckt.
+     *
+     * <p>Ist keine Ausrichtung hinterlegt, ergibt sie sich aus der Nachbarschaft:
+     * eine Pumpe drueckt in den Kanal, an dem sie haengt. Damit funktioniert sie
+     * auch dann, wenn die Blockrotation nicht ausgelesen werden kann - man baut
+     * einfach Pumpe und Kanal nebeneinander.
+     *
+     * <p>Haengen mehrere Kanaele an, gewinnt die erste Richtung in der
+     * Reihenfolge von {@link Direction}. Das ist beliebig, aber vorhersagbar;
+     * wer es genau steuern will, setzt die Ausrichtung ausdruecklich.
+     */
+    default Direction effectivePumpFacing(BlockPos pos) {
+        Direction explicit = pumpFacing(pos);
+        if (explicit != null) {
+            return explicit;
+        }
+        for (Direction candidate : Direction.values()) {
+            if (conducts(pos.offset(candidate))) {
+                return candidate;
+            }
+        }
+        return null;
+    }
 }

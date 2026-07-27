@@ -8,7 +8,7 @@ import java.util.Map;
 /**
  * Handgebaute Welt fuer die Tests: eine Map statt eines Servers.
  */
-final class TestWorld implements WorldView {
+class TestWorld implements WorldView {
 
     private final Map<BlockPos, NodeType> types = new HashMap<>();
     private final Map<BlockPos, Direction> facings = new HashMap<>();

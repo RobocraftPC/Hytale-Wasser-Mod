@@ -4,7 +4,10 @@ import com.hypixel.hytale.server.core.plugin.JavaPlugin;
 import com.hypixel.hytale.server.core.plugin.JavaPluginInit;
 import de.tmjh.stroemwerk.flow.FlowSettings;
 import de.tmjh.stroemwerk.hytale.commands.WasserbahnCommand;
+import de.tmjh.stroemwerk.hytale.systems.BlockChangeSystems;
 import de.tmjh.stroemwerk.platform.BlockIds;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import javax.annotation.Nonnull;
 
@@ -24,21 +27,24 @@ public class StroemwerkPlugin extends JavaPlugin {
 
     @Override
     protected void setup() {
-        // ANPASSEN: Block-IDs muessen aus der Item-Registry aufgeloest werden,
-        // sobald der Aufruf gegen die echte Server-Jar feststeht. Siehe README,
-        // Abschnitt "Offene Anbindung".
-        BlockIds blockIds = BlockIds.NONE_RESOLVED;
+        List<String> missing = new ArrayList<>();
+        BlockIds blockIds = BlockIdResolver.resolve(missing::add);
 
         this.runtime = new StroemwerkRuntime(FlowSettings.DEFAULT, blockIds);
 
         getCommandRegistry().registerCommand(new WasserbahnCommand(runtime));
 
-        if (blockIds.anyResolved()) {
+        getEntityStoreRegistry().registerSystem(new BlockChangeSystems.Place(runtime));
+        getEntityStoreRegistry().registerSystem(new BlockChangeSystems.Break(runtime));
+
+        if (missing.isEmpty()) {
             getLogger().at(Level.INFO).log("Stroemwerk geladen - Wasserbahn bereit");
         } else {
-            // Sonst sucht man im Spiel lange nach dem Grund, warum nichts fliesst.
+            // Ohne die Bloecke laeuft nichts, und im Spiel sieht man nur, dass
+            // nichts passiert. Deshalb hier deutlich benennen, was fehlt.
             getLogger().at(Level.WARNING).log(
-                    "Stroemwerk geladen, aber keine Block-IDs aufgeloest - die Wasserbahn bleibt untaetig.");
+                    "Stroemwerk geladen, aber diese Bloecke fehlen: " + String.join(", ", missing)
+                            + " - ist das Asset-Pack aktiviert?");
         }
     }
 

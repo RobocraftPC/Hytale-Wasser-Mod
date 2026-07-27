@@ -9,8 +9,10 @@ Gegenstände mit.
 
 ## Spielregeln der Wasserbahn
 
-- Die **Wasserpumpe** erzeugt Strömung in ihre Blickrichtung. Vor ihr muss ein
-  Kanal liegen, sonst passiert nichts.
+- Die **Wasserpumpe** drückt in den Kanal, an dem sie hängt. Einfach Pumpe und
+  Kanal nebeneinander setzen — eine Ausrichtung muss man nicht einstellen.
+  Grenzen mehrere Kanäle an, entscheidet eine feste Reihenfolge
+  (Nord, Ost, Süd, West, Oben, Unten).
 - Der **Wasserkanal** leitet die Strömung weiter. Pro Block sinkt der Druck um
   eine Stufe, ab Werk reicht eine Pumpe 32 Blöcke weit.
 - Kurven und Abzweige funktionieren. An einer Gabelung hat **geradeaus
@@ -79,7 +81,7 @@ Der Mod ist bewusst in zwei Hälften geteilt:
 Die eigentliche Mechanik — wie sich Druck ausbreitet, wo Strömungen sich
 aufheben, wie schnell ein Gegenstand treibt — hängt an keiner einzigen
 Hytale-Klasse. Sie arbeitet gegen das schmale Interface `WorldView` und ist
-damit ohne laufenden Server testbar. Deshalb gibt es 41 Tests, die in
+damit ohne laufenden Server testbar. Deshalb gibt es 47 Tests, die in
 Sekunden durchlaufen, statt jede Änderung im Spiel nachstellen zu müssen.
 
 Der Preis dafür ist eine Übersetzungsschicht in `hytale`. Die ist klein und
@@ -87,22 +89,26 @@ genau der Teil, den man anfassen muss, wenn sich die Server-API ändert.
 
 ## Offene Anbindung
 
-Der Mod kompiliert gegen eine echte `HytaleServer.jar`, laedt im Spiel und
-meldet sich im Log. Die Mechanik haengt aber an keinem Server-Event — drei
-Stellen sind noch nicht angeschlossen und im Code mit `ANPASSEN` markiert:
+Der Mod kompiliert gegen eine echte `HytaleServer.jar`, lädt im Spiel und
+meldet sich im Log. Block-IDs und Bau-Events sind inzwischen angeschlossen —
+Bauen und Abbauen aktualisiert das Strömungsnetz, `/wasserbahn` zeigt echte
+Zahlen. Was noch fehlt:
 
-1. **Block-IDs auflösen** (`StroemwerkPlugin.setup()`) — die IDs der drei
-   Bauteile müssen aus der Item-Registry kommen, aktuell steht dort
-   `BlockIds.NONE_RESOLVED`. Solange meldet das Plugin beim Start eine Warnung
-   und `/wasserbahn` weist darauf hin, statt still nichts zu tun.
-2. **Blockrotation lesen** (`BlockFacing`) — bis klar ist, wie Hytale die
-   Ausrichtung eines platzierten Blocks ablegt, merkt sich das Plugin die
-   Blickrichtung beim Platzieren selbst. Das überlebt keinen Serverneustart.
-3. **Bau-Events, Schleusen-Interaktion und Item-Transport** —
-   `StroemwerkRuntime.onBlockChanged`, `onBlockRemoved`, `toggleGate` und
-   `velocityAt` sind fertig und getestet. Es fehlt die Verdrahtung an
-   `PlaceBlockEvent`/`BreakBlockEvent`, an `UseBlockEvent` zum Schalten der
-   Schleuse und an die Item-Entities des Servers.
+1. **Item-Transport** — `StroemwerkRuntime.velocityAt` liefert die fertige,
+   getestete Geschwindigkeit für jeden Punkt im Kanal. Es fehlt das
+   Tick-System, das die Gegenstände im Kanal einsammelt und diese
+   Geschwindigkeit auf sie anwendet. Bis dahin fließt Wasser, aber nichts
+   fährt darin.
+2. **Schleuse schalten** — `StroemwerkRuntime.toggleGate` ist fertig, es fehlt
+   die Anbindung an `UseBlockEvent.Pre`, damit ein Rechtsklick sie umlegt.
+3. **Blockrotation lesen** (`BlockFacing`) — nicht mehr dringend, seit die
+   Pumpe sich ihren Kanal selbst sucht. Mit auslesbarer Rotation ließe sich
+   die Richtung genauer steuern.
+
+Einige Importe im Paket `hytale` sind mit `PRUEFEN` markiert: sie stammen aus
+der API-Referenz, nicht aus einem Build gegen die Server-Jar. Stimmt ein Paket
+nicht, lässt sich der Import in der IDE auffüllen — an der Logik ändert das
+nichts.
 
 Ebenfalls noch offen: Die Blöcke benutzen Platzhaltertexturen
 (`tools/make_textures.py`) und einfache Würfelmodelle. Ein Kanal sollte ein

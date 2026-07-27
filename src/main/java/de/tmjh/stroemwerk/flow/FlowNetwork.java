@@ -90,7 +90,7 @@ public final class FlowNetwork {
      */
     private static void traceFromPump(WorldView world, BlockPos pump, int maxStrength,
                                       Map<BlockPos, List<FlowNode>> offers) {
-        Direction facing = world.pumpFacing(pump);
+        Direction facing = world.effectivePumpFacing(pump);
         if (facing == null) {
             return;
         }

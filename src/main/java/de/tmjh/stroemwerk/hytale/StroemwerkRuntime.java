@@ -50,6 +50,17 @@ public final class StroemwerkRuntime {
     }
 
     /**
+     * Meldet ein neu gesetztes Bauteil.
+     *
+     * <p>Eine Ausrichtung wird nicht hinterlegt: eine Pumpe drueckt in den
+     * Kanal, an dem sie haengt. Sobald sich die Blockrotation auslesen laesst,
+     * kann hier {@link BlockFacing#remember} dazukommen.
+     */
+    public void onBlockPlaced(World world, BlockPos pos) {
+        networkFor(world).onBlockChanged(pos);
+    }
+
+    /**
      * Meldet, dass ein Bauteil abgebaut wurde. Zusaetzlich zum Netz muessen die
      * gemerkten Zustaende weg, sonst erbt ein spaeter an dieselbe Stelle
      * gesetzter Block die alte Ausrichtung oder eine geschlossene Schleuse.
