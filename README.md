@@ -79,8 +79,32 @@ Für den vollständigen Build gehört `HytaleServer.jar` nach `libraries/`,
 siehe [libraries/README.md](libraries/README.md). **Ohne** die Jar baut und
 testet das Projekt trotzdem — dann bleibt nur das Paket `hytale` außen vor.
 
-Installiert wird die fertige Jar im `mods/`-Verzeichnis des Servers.
-C:\Users\<Username>\AppData\Roaming\Hytale\UserData\Mods
+### Automatisch in den Server kopieren
+
+Damit nach dem Bauen nur noch der Serverneustart bleibt, trägt man den
+Mods-Ordner in eine `.env` ein:
+
+```bash
+cp .env.example .env
+```
+
+```
+HYTALE_MODS_DIR=C:\Users\<Name>\AppData\Roaming\Hytale\UserData\Mods
+```
+
+`./gradlew build` legt die Jar dann dort ab und räumt vorher die alten
+`Stroemwerk-*.jar` weg. **Andere Mods im selben Ordner bleiben unberührt** —
+gelöscht wird nur, was mit `Stroemwerk-` beginnt.
+
+Die `.env` ist nicht eingecheckt. Ohne sie überspringt sich der Schritt mit
+einem Hinweis, bauen und testen geht also auch ohne. Alternativ tut es die
+Umgebungsvariable `HYTALE_MODS_DIR`. Zeigt der Pfad ins Leere, bricht der
+Build ab, statt den Tippfehler stillschweigend zu schlucken.
+
+Einzeln aufrufen lässt sich der Schritt mit `./gradlew deployMod`.
+
+Von Hand liegt der Ordner unter:
+`C:\Users\<Name>\AppData\Roaming\Hytale\UserData\Mods`
 
 ## Aufbau
 

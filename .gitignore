@@ -5,6 +5,9 @@ tools/junit-console.jar
 # Kommt aus der eigenen Hytale-Installation, siehe libraries/README.md
 libraries/*.jar
 
+# Rechnerabhaengige Pfade, Vorlage steht in .env.example
+.env
+
 .idea/
 *.iml
 out/
