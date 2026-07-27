@@ -54,10 +54,24 @@ Damit lassen sich drei Dinge bauen, die vorher nicht gingen:
 
 Ein **Rechtsklick** auf eine Schleuse legt sie um.
 
-`/wasserbahn` zeigt an, was das Netz gerade berechnet hat — Anzahl Pumpen,
-fließende Kanäle, geschlossene Schleusen und blockierte Stellen. Bei langen
-Strecken ist das die schnellste Art herauszufinden, warum irgendwo nichts
-läuft.
+### Wenn nichts passiert: `/wasserbahn`
+
+Der Befehl geht die Kette von hinten durch und beantwortet der Reihe nach:
+
+1. **Sind die Blöcke erkannt?** Ohne aufgelöste Block-IDs hält der Mod jeden
+   Block für Luft und bleibt untätig. Steht dort `FEHLT: ...`, ist das
+   Asset-Pack nicht geladen.
+2. **Kommen die Ereignisse an?** `gebaut`/`abgebaut`/`benutzt` zählen die
+   Bau-Events. Bleiben sie auf 0, obwohl gebaut wurde, greifen die
+   ECS-Systeme nicht.
+3. **Läuft das Tick-System?** `geprüft` zählt jeden Gegenstand pro Tick,
+   `getragen` nur die, die tatsächlich in einer Strömung liegen.
+4. Erst danach die Zahlen zum Netz selbst: Pumpen, fließende Kanäle,
+   geschlossene Schleusen, blockierte Stellen.
+
+Die Block-IDs werden **nicht** beim Start festgenagelt, sondern beim ersten
+Bedarf gesucht und so lange erneut versucht, bis alle vier da sind — beim
+Laden des Plugins sind die Asset-Packs noch nicht zwingend bereit.
 
 ## Bauen
 

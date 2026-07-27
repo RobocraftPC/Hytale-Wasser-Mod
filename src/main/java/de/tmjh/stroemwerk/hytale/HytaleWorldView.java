@@ -20,10 +20,10 @@ import de.tmjh.stroemwerk.platform.GateStateStore;
 public final class HytaleWorldView implements WorldView {
 
     private final World world;
-    private final BlockIds blockIds;
+    private final BlockIdLookup blockIds;
     private final GateStateStore gates;
 
-    public HytaleWorldView(World world, BlockIds blockIds, GateStateStore gates) {
+    public HytaleWorldView(World world, BlockIdLookup blockIds, GateStateStore gates) {
         this.world = world;
         this.blockIds = blockIds;
         this.gates = gates;
@@ -31,7 +31,9 @@ public final class HytaleWorldView implements WorldView {
 
     @Override
     public NodeType typeAt(BlockPos pos) {
-        return blockIds.typeOf(world.getBlock(pos.x(), pos.y(), pos.z()));
+        // Bewusst bei jedem Zugriff abgefragt: die IDs koennen beim Start noch
+        // gefehlt haben und erst spaeter dazukommen.
+        return blockIds.get().typeOf(world.getBlock(pos.x(), pos.y(), pos.z()));
     }
 
     @Override
@@ -52,6 +54,6 @@ public final class HytaleWorldView implements WorldView {
     }
 
     public BlockIds blockIds() {
-        return blockIds;
+        return blockIds.get();
     }
 }

@@ -6,9 +6,6 @@ import de.tmjh.stroemwerk.flow.FlowSettings;
 import de.tmjh.stroemwerk.hytale.commands.WasserbahnCommand;
 import de.tmjh.stroemwerk.hytale.systems.BlockChangeSystems;
 import de.tmjh.stroemwerk.hytale.systems.ItemFlowSystem;
-import de.tmjh.stroemwerk.platform.BlockIds;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Level;
 import javax.annotation.Nonnull;
 
@@ -28,10 +25,10 @@ public class StroemwerkPlugin extends JavaPlugin {
 
     @Override
     protected void setup() {
-        List<String> missing = new ArrayList<>();
-        BlockIds blockIds = BlockIdResolver.resolve(missing::add);
-
-        this.runtime = new StroemwerkRuntime(FlowSettings.DEFAULT, blockIds);
+        // Nicht hier aufloesen: die Asset-Packs sind zu diesem Zeitpunkt noch
+        // nicht sicher geladen. BlockIdLookup holt die IDs beim ersten Bedarf
+        // nach und versucht es erneut, solange etwas fehlt.
+        this.runtime = new StroemwerkRuntime(FlowSettings.DEFAULT, new BlockIdLookup());
 
         getCommandRegistry().registerCommand(new WasserbahnCommand(runtime));
 
@@ -40,14 +37,25 @@ public class StroemwerkPlugin extends JavaPlugin {
         getEntityStoreRegistry().registerSystem(new BlockChangeSystems.Use(runtime));
         getEntityStoreRegistry().registerSystem(new ItemFlowSystem(runtime));
 
-        if (missing.isEmpty()) {
-            getLogger().at(Level.INFO).log("Stroemwerk geladen - Wasserbahn bereit");
+        getLogger().at(Level.INFO).log("Stroemwerk geladen - 4 Systeme registriert, "
+                + "Bloecke werden beim ersten Zugriff gesucht. Stand pruefen mit /wasserbahn");
+    }
+
+    /**
+     * Sobald der Server laeuft, sollten die Asset-Packs da sein - guter
+     * Zeitpunkt, um die Bloecke einmal zu suchen und das Ergebnis zu melden.
+     */
+    @Override
+    protected void start() {
+        BlockIdLookup lookup = runtime.blockIds();
+        lookup.get();
+
+        if (lookup.isComplete()) {
+            getLogger().at(Level.INFO).log("Stroemwerk: alle Bloecke erkannt - Wasserbahn bereit");
         } else {
-            // Ohne die Bloecke laeuft nichts, und im Spiel sieht man nur, dass
-            // nichts passiert. Deshalb hier deutlich benennen, was fehlt.
             getLogger().at(Level.WARNING).log(
-                    "Stroemwerk geladen, aber diese Bloecke fehlen: " + String.join(", ", missing)
-                            + " - ist das Asset-Pack aktiviert?");
+                    "Stroemwerk: diese Bloecke fehlen noch: " + String.join(", ", lookup.missing())
+                            + " - ist das Asset-Pack aktiviert? Es wird weiter versucht.");
         }
     }
 

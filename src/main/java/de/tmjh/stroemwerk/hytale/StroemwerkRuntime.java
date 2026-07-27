@@ -12,6 +12,7 @@ import de.tmjh.stroemwerk.platform.ChannelNetworkService;
 import de.tmjh.stroemwerk.platform.GateStateStore;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Haelt pro Welt ein Stroemungsnetz und schiebt die Gegenstaende darin.
@@ -24,9 +25,18 @@ public final class StroemwerkRuntime {
     private final Map<String, ChannelNetworkService> networks = new ConcurrentHashMap<>();
     private final GateStateStore gates = new GateStateStore();
     private final FlowSettings settings;
-    private final BlockIds blockIds;
+    private final BlockIdLookup blockIds;
 
-    public StroemwerkRuntime(FlowSettings settings, BlockIds blockIds) {
+    // Zaehler fuer /wasserbahn. Wenn im Spiel nichts passiert, ist die erste
+    // Frage, ob die Ereignisse ueberhaupt ankommen - ohne diese Zahlen laesst
+    // sich das von aussen nicht unterscheiden.
+    private final AtomicLong placedEvents = new AtomicLong();
+    private final AtomicLong removedEvents = new AtomicLong();
+    private final AtomicLong useEvents = new AtomicLong();
+    private final AtomicLong itemTicks = new AtomicLong();
+    private final AtomicLong itemsPushed = new AtomicLong();
+
+    public StroemwerkRuntime(FlowSettings settings, BlockIdLookup blockIds) {
         this.settings = settings;
         this.blockIds = blockIds;
     }
@@ -57,6 +67,7 @@ public final class StroemwerkRuntime {
      * kann hier {@link BlockFacing#remember} dazukommen.
      */
     public void onBlockPlaced(World world, BlockPos pos) {
+        placedEvents.incrementAndGet();
         networkFor(world).onBlockChanged(pos);
     }
 
@@ -66,6 +77,7 @@ public final class StroemwerkRuntime {
      * gesetzter Block die alte Ausrichtung oder eine geschlossene Schleuse.
      */
     public void onBlockRemoved(World world, BlockPos pos) {
+        removedEvents.incrementAndGet();
         BlockFacing.forget(world, pos);
         gates.remove(world.getName(), pos);
         networkFor(world).onBlockChanged(pos);
@@ -76,6 +88,7 @@ public final class StroemwerkRuntime {
      * Schleuse, passiert nichts und es kommt {@code null} zurueck.
      */
     public Boolean toggleGate(World world, BlockPos pos) {
+        useEvents.incrementAndGet();
         ChannelNetworkService service = networkFor(world);
         if (service.typeAt(pos) != NodeType.GATE) {
             return null;
@@ -90,8 +103,12 @@ public final class StroemwerkRuntime {
      * {@link Vec3d#ZERO}, wenn dort keine Wasserbahn liegt.
      */
     public Vec3d velocityAt(World world, double x, double y, double z) {
+        itemTicks.incrementAndGet();
         BlockPos block = ItemPush.blockAt(x, y, z);
         FlowNode node = networkFor(world).flowAt(block);
+        if (node != null) {
+            itemsPushed.incrementAndGet();
+        }
         return ItemPush.velocity(node, block, x, y, z, settings);
     }
 
@@ -99,8 +116,28 @@ public final class StroemwerkRuntime {
         return settings;
     }
 
-    public BlockIds blockIds() {
+    public BlockIdLookup blockIds() {
         return blockIds;
+    }
+
+    public long placedEvents() {
+        return placedEvents.get();
+    }
+
+    public long removedEvents() {
+        return removedEvents.get();
+    }
+
+    public long useEvents() {
+        return useEvents.get();
+    }
+
+    public long itemTicks() {
+        return itemTicks.get();
+    }
+
+    public long itemsPushed() {
+        return itemsPushed.get();
     }
 
     public GateStateStore gates() {
