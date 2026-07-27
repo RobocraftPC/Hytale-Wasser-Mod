@@ -105,7 +105,98 @@ tasks.register('archiveJar') {
 }
 
 tasks.named('build') {
-    finalizedBy 'archiveJar'
+    finalizedBy 'archiveJar', 'deployMod'
+}
+
+// Kopiert die gebaute Jar direkt in den Mods-Ordner des Servers, damit nach
+// dem Bauen nur noch der Server neu gestartet werden muss.
+//
+// Der Zielpfad steht in .env (nicht eingecheckt, siehe .env.example):
+//
+//     HYTALE_MODS_DIR=C:\Users\<Name>\AppData\Roaming\Hytale\UserData\Mods
+//
+// Ohne .env passiert nichts - der Task meldet das und ist fertig. So stoert
+// er auf Rechnern nicht, die den Mod nur bauen wollen.
+def modsDirKey = 'HYTALE_MODS_DIR'
+def envFile = layout.projectDirectory.file('.env').asFile
+def jarPrefix = 'Stroemwerk-'
+
+// Liest einen Schluessel aus einer .env-Datei. Kommentarzeilen und
+// Anfuehrungszeichen um den Wert werden dabei entfernt.
+def readEnvValue = { File file, String key ->
+    if (!file.isFile()) {
+        return null
+    }
+    String found = null
+    file.eachLine('UTF-8') { String line ->
+        String trimmed = line.trim()
+        if (trimmed.isEmpty() || trimmed.startsWith('#')) {
+            return
+        }
+        int separator = trimmed.indexOf('=')
+        if (separator <= 0 || trimmed.substring(0, separator).trim() != key) {
+            return
+        }
+        String value = trimmed.substring(separator + 1).trim()
+        if (value.length() >= 2
+                && ((value.startsWith('"') && value.endsWith('"'))
+                || (value.startsWith("'") && value.endsWith("'")))) {
+            value = value.substring(1, value.length() - 1)
+        }
+        found = value
+    }
+    return found
+}
+
+tasks.register('deployMod') {
+    group = 'stroemwerk'
+    description = "Kopiert die Jar in den Mods-Ordner aus .env ($modsDirKey)."
+
+    // Wie archiveJar an test gehaengt: aus einem roten Build soll nichts
+    // im Spiel landen.
+    dependsOn tasks.named('jar'), tasks.named('test')
+    outputs.upToDateWhen { false }
+
+    doLast {
+        String configured = readEnvValue(envFile, modsDirKey) ?: System.getenv(modsDirKey)
+        if (configured == null || configured.trim().isEmpty()) {
+            logger.lifecycle("deployMod: kein $modsDirKey gesetzt - uebersprungen. " +
+                    'Siehe .env.example.')
+            return
+        }
+
+        File modsDir = new File(configured.trim())
+        if (!modsDir.isDirectory()) {
+            // Ein gesetzter, aber falscher Pfad ist fast immer ein Tippfehler.
+            // Den still zu schlucken oder den Ordner anzulegen wuerde ihn nur
+            // verstecken.
+            throw new GradleException("$modsDirKey zeigt auf keinen Ordner: $modsDir")
+        }
+
+        // Nur die eigenen Jars aufraeumen. Ein pauschales *.jar wuerde hier
+        // fremde Mods mitloeschen - der Ordner gehoert nicht uns allein.
+        int removed = 0
+        modsDir.listFiles()?.each { File candidate ->
+            if (candidate.isFile()
+                    && candidate.name.startsWith(jarPrefix)
+                    && candidate.name.endsWith('.jar')) {
+                if (candidate.delete()) {
+                    removed++
+                    logger.lifecycle("deployMod: entfernt ${candidate.name}")
+                } else {
+                    throw new GradleException("Konnte ${candidate.name} nicht loeschen - " +
+                            'laeuft der Server noch?')
+                }
+            }
+        }
+
+        File source = builtJar.get().asFile
+        File target = new File(modsDir, source.name)
+        target.bytes = source.bytes
+
+        logger.lifecycle("deployMod: ${target.name} nach $modsDir " +
+                "(${removed} alte Datei${removed == 1 ? '' : 'en'} ersetzt)")
+    }
 }
 
 // Baut die Bloecke als reines Asset-Pack, also ohne Java-Anteil. Damit lassen
