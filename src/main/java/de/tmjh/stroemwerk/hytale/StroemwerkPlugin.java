@@ -5,6 +5,7 @@ import com.hypixel.hytale.server.core.plugin.JavaPluginInit;
 import de.tmjh.stroemwerk.flow.FlowSettings;
 import de.tmjh.stroemwerk.hytale.commands.WasserbahnCommand;
 import de.tmjh.stroemwerk.hytale.systems.BlockChangeSystems;
+import de.tmjh.stroemwerk.hytale.systems.ItemFlowSystem;
 import de.tmjh.stroemwerk.platform.BlockIds;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +38,7 @@ public class StroemwerkPlugin extends JavaPlugin {
         getEntityStoreRegistry().registerSystem(new BlockChangeSystems.Place(runtime));
         getEntityStoreRegistry().registerSystem(new BlockChangeSystems.Break(runtime));
         getEntityStoreRegistry().registerSystem(new BlockChangeSystems.Use(runtime));
+        getEntityStoreRegistry().registerSystem(new ItemFlowSystem(runtime));
 
         if (missing.isEmpty()) {
             getLogger().at(Level.INFO).log("Stroemwerk geladen - Wasserbahn bereit");

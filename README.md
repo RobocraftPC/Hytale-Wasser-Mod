@@ -103,24 +103,21 @@ genau der Teil, den man anfassen muss, wenn sich die Server-API ändert.
 
 ## Offene Anbindung
 
-Der Mod kompiliert gegen eine echte `HytaleServer.jar`, lädt im Spiel und
-meldet sich im Log. Block-IDs und Bau-Events sind inzwischen angeschlossen —
-Bauen und Abbauen aktualisiert das Strömungsnetz, `/wasserbahn` zeigt echte
-Zahlen. Was noch fehlt:
+Alles ist angeschlossen: Block-IDs, Bau-Events, Schleusen-Rechtsklick und der
+Item-Transport. Was jetzt noch aussteht, ist **Erprobung im Spiel** — dass es
+kompiliert, heißt nicht, dass es sich gut anfühlt.
 
-1. **Item-Transport** — `StroemwerkRuntime.velocityAt` liefert die fertige,
-   getestete Geschwindigkeit für jeden Punkt im Kanal. Es fehlt das
-   Tick-System, das die Gegenstände im Kanal einsammelt und diese
-   Geschwindigkeit auf sie anwendet. Bis dahin fließt Wasser, aber nichts
-   fährt darin.
-2. **Blockrotation lesen** (`BlockFacing`) — nicht mehr dringend, seit die
-   Pumpe sich ihren Kanal selbst sucht. Mit auslesbarer Rotation ließe sich
-   die Richtung genauer steuern.
+Worauf beim ersten Test zu achten wäre:
 
-Einige Importe im Paket `hytale` sind mit `PRUEFEN` markiert: sie stammen aus
-der API-Referenz, nicht aus einem Build gegen die Server-Jar. Stimmt ein Paket
-nicht, lässt sich der Import in der IDE auffüllen — an der Logik ändert das
-nichts.
+- Werden Gegenstände sauber getragen, oder zappeln sie? `ItemFlowSystem` setzt
+  die Geschwindigkeit hart; ein sanfteres Angleichen könnte ruhiger aussehen.
+- Wie verhält sich das Zusammenspiel mit der Schwerkraft an Steigungen?
+- `ItemFlowSystem` läuft bewusst nicht parallel, weil die Netzabfrage nicht
+  threadsicher ist. Bei vielen Gegenständen wäre zu prüfen, ob das reicht.
+
+Offen bleibt das Auslesen der **Blockrotation** (`BlockFacing`) — nicht
+dringend, seit die Pumpe sich ihren Kanal selbst sucht. Mit auslesbarer
+Rotation ließe sich die Richtung genauer steuern.
 
 Ebenfalls noch offen: Die Blöcke benutzen Platzhaltertexturen
 (`tools/make_textures.py`) und einfache Würfelmodelle. Ein Kanal sollte ein
