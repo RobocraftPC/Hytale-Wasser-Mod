@@ -59,15 +59,18 @@ public final class FlowNetwork {
      * @param pumps       Positionen aller Pumpen, die beruecksichtigt werden sollen
      * @param maxStrength Startdruck einer Pumpe und damit ihre Reichweite
      */
+    /**
+     * Baut das Netz mit Standardeinstellungen, aber eigener Grundreichweite.
+     */
     public static FlowNetwork build(WorldView world, Collection<BlockPos> pumps, int maxStrength) {
-        return build(world, pumps, maxStrength, null);
+        if (maxStrength < 1) {
+            throw new IllegalArgumentException("maxStrength muss mindestens 1 sein, war " + maxStrength);
+        }
+        return build(world, pumps, maxStrength, FlowSettings.DEFAULT.withMaxStrength(maxStrength));
     }
 
     private static FlowNetwork build(WorldView world, Collection<BlockPos> pumps, int maxStrength,
                                      FlowSettings settings) {
-        if (maxStrength < 1) {
-            throw new IllegalArgumentException("maxStrength muss mindestens 1 sein, war " + maxStrength);
-        }
 
         // Pro Kanalblock sammeln wir alle Angebote der einzelnen Pumpen und
         // entscheiden erst danach, welches gewinnt. Getrennte Phasen halten das
@@ -80,7 +83,9 @@ public final class FlowNetwork {
             if (world.typeAt(pump) != NodeType.PUMP) {
                 continue;
             }
-            traceFromPump(world, pump, strengthOf(world, pump, maxStrength, settings), offers);
+            int budget = settings == null ? Integer.MAX_VALUE : settings.maxNodes();
+            traceFromPump(world, pump, strengthOf(world, pump, maxStrength, settings),
+                    settings, budget, offers);
         }
 
         Map<BlockPos, FlowNode> resolved = new HashMap<>();
@@ -110,10 +115,26 @@ public final class FlowNetwork {
     }
 
     /**
+     * Druckverlust fuer einen Schritt in diese Richtung. Bergauf kostet Kraft,
+     * bergab hilft die Schwerkraft, waagerecht kostet es eine Stufe.
+     */
+    private static int stepCost(Direction direction, FlowSettings settings) {
+        if (settings == null) {
+            return 1;
+        }
+        return switch (direction) {
+            case UP -> settings.costUp();
+            case DOWN -> settings.costDown();
+            default -> 1;
+        };
+    }
+
+    /**
      * Breitensuche ab einer Pumpe. Der erste Kanal vor der Pumpe bekommt den
-     * vollen Druck, jeder weitere eine Stufe weniger.
+     * vollen Druck, jeder weitere so viel weniger, wie der Weg dorthin kostet.
      */
     private static void traceFromPump(WorldView world, BlockPos pump, int maxStrength,
+                                      FlowSettings settings, int nodeBudget,
                                       Map<BlockPos, List<FlowNode>> offers) {
         Direction facing = world.effectivePumpFacing(pump);
         if (facing == null) {
@@ -149,9 +170,18 @@ public final class FlowNetwork {
             }
 
             for (Direction next : exits) {
+                int remaining = step.strength - stepCost(next, settings);
+                if (remaining < 1) {
+                    continue;
+                }
                 BlockPos target = step.pos.offset(next);
+                if (visited.size() >= nodeBudget) {
+                    // Ein Fallschacht kostet keinen Druck, eine Anlage koennte
+                    // also beliebig gross werden. Hier ist Schluss.
+                    return;
+                }
                 if (visited.add(target)) {
-                    queue.add(new Step(target, next, step.strength - 1));
+                    queue.add(new Step(target, next, remaining));
                 }
             }
         }

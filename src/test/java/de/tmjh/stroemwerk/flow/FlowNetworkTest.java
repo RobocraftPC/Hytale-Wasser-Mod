@@ -93,7 +93,8 @@ class FlowNetworkTest {
 
         assertEquals(Direction.UP, net.at(new BlockPos(1, 0, 0)).direction());
         assertEquals(Direction.UP, net.at(new BlockPos(1, 2, 0)).direction());
-        assertEquals(17, net.at(new BlockPos(1, 3, 0)).strength());
+        // Drei Bloecke bergauf zu je zwei Stufen: 20 - 6 = 14.
+        assertEquals(14, net.at(new BlockPos(1, 3, 0)).strength());
     }
 
     @Test

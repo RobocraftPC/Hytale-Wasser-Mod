@@ -17,7 +17,9 @@ Gegenstände mit.
   eine Stufe, ab Werk reicht eine Pumpe 32 Blöcke weit.
 - Kurven und Abzweige funktionieren. An einer Gabelung hat **geradeaus
   Vorrang**; der Abzweig wird trotzdem versorgt, nur eine Stufe schwächer.
-- Kanäle dürfen senkrecht laufen — Wasser trägt Gegenstände auch nach oben.
+- Kanäle dürfen senkrecht laufen, aber **Höhe kostet**: bergauf zwei Stufen je
+  Block, bergab keine. Ein Fallschacht ist also gratis und speist die Strecke
+  darunter mit vollem Druck — bergauf reicht dieselbe Pumpe nur halb so weit.
 - Treffen zwei Pumpen aufeinander, gewinnt der **höhere Restdruck**. Bei
   Gleichstand blockieren sie sich und der Kanal steht still.
 - Je weiter weg von der Pumpe, desto **langsamer** der Transport: von 4 Blöcken
@@ -93,7 +95,7 @@ Der Mod ist bewusst in zwei Hälften geteilt:
 Die eigentliche Mechanik — wie sich Druck ausbreitet, wo Strömungen sich
 aufheben, wie schnell ein Gegenstand treibt — hängt an keiner einzigen
 Hytale-Klasse. Sie arbeitet gegen das schmale Interface `WorldView` und ist
-damit ohne laufenden Server testbar. Deshalb gibt es 54 Tests, die in
+damit ohne laufenden Server testbar. Deshalb gibt es 60 Tests, die in
 Sekunden durchlaufen, statt jede Änderung im Spiel nachstellen zu müssen.
 
 Der Preis dafür ist eine Übersetzungsschicht in `hytale`. Die ist klein und

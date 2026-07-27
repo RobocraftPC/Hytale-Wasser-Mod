@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Test;
 class WaterWheelTest {
 
     private static final FlowSettings SETTINGS =
-            new FlowSettings(10, 4.0, 1.0, 4.0, 1.5, 5, 2);
+            new FlowSettings(10, 4.0, 1.0, 4.0, 1.5, 5, 2, 2, 0, 4096);
 
     private static TestWorld line() {
         return new TestWorld()
