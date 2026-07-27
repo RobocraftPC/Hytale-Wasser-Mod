@@ -8,3 +8,4 @@ libraries/*.jar
 .idea/
 *.iml
 out/
+gradle.properties
